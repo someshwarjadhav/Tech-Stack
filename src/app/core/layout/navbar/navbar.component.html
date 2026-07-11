@@ -1,0 +1,37 @@
+<header class="h-[68px] shrink-0 border-b border-ink-100 bg-white/80 backdrop-blur px-6 flex items-center justify-between gap-4">
+ 
+  <div class="min-w-0">
+    <div class="flex items-center gap-1.5 text-[13px] text-ink-400 font-medium">
+      <span class="hover:text-ink-600 cursor-pointer transition-colors">Obesity</span>
+      <app-icon name="chevron-right" [size]="13" stroke="#c7cbd6"></app-icon>
+      <span class="text-ink-900 font-semibold">Disease Biology</span>
+    </div>
+    <p class="text-[12px] text-ink-400 mt-0.5 truncate">Pathways, signals, and mechanisms driving obesity — from genes to whole-body regulation</p>
+  </div>
+
+  <div class="hidden md:flex items-center flex-1 max-w-sm">
+    <div class="relative w-full">
+      <app-icon name="search" [size]="16" stroke="#aeb5c4" class="absolute left-3 top-1/2 -translate-y-1/2"></app-icon>
+      <input
+        type="text"
+        placeholder="Search nodes, pathways, targets..."
+        class="w-full pl-9 pr-3 py-2 text-[13px] rounded-lg border border-ink-100 bg-ink-50/60 focus:bg-white focus:border-brand-300 focus:ring-2 focus:ring-brand-100 outline-none transition"
+      />
+    </div>
+  </div>
+
+
+  <div class="flex items-center gap-2 shrink-0">
+    <button class="flex items-center gap-1.5 px-3 py-2 text-[12.5px] font-semibold text-ink-600 hover:bg-ink-50 rounded-lg transition-colors border border-ink-100">
+      <app-icon name="book" [size]="15"></app-icon>
+      References
+    </button>
+    <button class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-ink-50 text-ink-500 transition-colors relative">
+      <app-icon name="bell" [size]="17"></app-icon>
+      <span class="absolute top-1.5 right-2 w-1.5 h-1.5 rounded-full bg-node-pink"></span>
+    </button>
+    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-white text-[12px] font-bold shadow-panel">
+      MG
+    </div>
+  </div>
+</header>

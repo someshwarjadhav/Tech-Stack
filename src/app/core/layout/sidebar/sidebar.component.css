@@ -1,0 +1,22 @@
+.nav-card {
+  cursor: pointer;
+}
+.nav-card:hover {
+  background: #f9fafb;
+}
+.nav-card.nav-active {
+  background: #f5f3ff;
+  box-shadow: inset 0 0 0 1.5px #ddd6fe;
+}
+.nav-card.nav-active span.text-gray-700 {
+  color: #111827;
+  font-weight: 700;
+}
+.learn-more-btn {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
+}
+.learn-more-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.45);
+}

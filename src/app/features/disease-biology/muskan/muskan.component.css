@@ -1,0 +1,53 @@
+.node-circle {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.node-circle:hover {
+  transform: scale(1.15);
+  filter: brightness(1.18);
+}
+.node-circle.active {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 14px rgba(0,0,0,0.25));
+}
+.detail-panel {
+  animation: slideIn 0.25s ease;
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.tooltip-box {
+  position: fixed;
+  background: #111827;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 12px;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+  max-width: 264px;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.tooltip-box.visible {
+  opacity: 1;
+}
+.tooltip-box .t-label {
+  font-weight: 700;
+  font-size: 13px;
+}
+.tooltip-box .t-desc {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 3px;
+}
+.tooltip-box .t-group {
+  font-size: 10px;
+  color: #c4b5fd;
+  margin-top: 5px;
+}

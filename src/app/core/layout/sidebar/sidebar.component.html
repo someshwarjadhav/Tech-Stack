@@ -1,0 +1,80 @@
+<aside
+  class="w-44 bg-white border-r border-gray-200 shrink-0 h-full relative flex flex-col"
+>
+  <div
+    class="flex flex-col items-center gap-1 pt-4 pb-3 border-b border-gray-100"
+  >
+    <img
+      [src]="logoUrl"
+      alt="Gosset Lens Logo"
+      class="w-10 h-10 rounded-lg object-contain"
+    />
+    <span class="text-[11px] font-extrabold text-gray-800 tracking-widest"
+      >GOSSET LENS</span
+    >
+    <span
+      class="text-[9px] text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full font-semibold"
+      >Preview</span
+    >
+  </div>
+
+  <nav class="flex-1 px-2 py-2 overflow-hidden flex flex-col justify-center">
+    <ul class="space-y-3">
+      <li *ngFor="let item of navItems">
+        <a
+          [routerLink]="[item.route]"
+          routerLinkActive="nav-active"
+          class="nav-card flex flex-col items-center gap-1.5 px-1 py-2 rounded-xl transition-all duration-200"
+        >
+          <span
+            class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+            [ngClass]="item.bg"
+          >
+            <svg
+              class="w-6 h-6"
+              [ngClass]="item.color"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                [attr.d]="item.icon"
+              ></path>
+            </svg>
+          </span>
+          <span
+            class="text-[11px] font-semibold text-gray-700 text-center leading-tight"
+            >{{ item.label }}</span
+          >
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="p-2.5 border-t border-gray-100">
+    <a
+      href="#"
+      class="learn-more-btn flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl text-xs font-bold text-white transition-transform duration-150"
+    >
+      <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+        <path
+          d="M12 2l2.9 6.26L21 9.27l-4.5 4.4 1.06 6.17L12 16.9l-5.56 2.94L7.5 13.67 3 9.27l6.1-1.01L12 2z"
+        ></path>
+      </svg>
+      <span>Learn more</span>
+    </a>
+
+    <div class="flex items-center justify-center gap-2 mt-2">
+      <a href="#" class="text-[10px] text-gray-400 hover:text-gray-600"
+        >Terms</a
+      >
+      <span class="text-gray-300 text-[10px]">&bull;</span>
+      <a href="#" class="text-[10px] text-orange-400 hover:text-orange-600"
+        >Privacy</a
+      >
+    </div>
+  </div>
+</aside>
