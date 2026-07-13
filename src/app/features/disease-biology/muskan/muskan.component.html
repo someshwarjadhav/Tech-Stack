@@ -1,0 +1,42 @@
+<div class="h-full w-full flex flex-col">
+  <app-graph-toolbar></app-graph-toolbar>
+  <div class="relative flex-1 min-h-0 mx-2.5 sm:mx-4 mb-2.5 sm:mb-4 rounded-xl sm:rounded-2xl border border-ink-100 bg-white overflow-hidden shadow-panel">
+    <app-muskan-graph-canvas></app-muskan-graph-canvas>
+    <aside *ngIf="graphService.selectedNode() as node"
+           class="absolute top-auto bottom-0 left-0 right-0 sm:top-6 sm:bottom-auto sm:left-auto sm:right-6 z-30 w-full sm:w-[320px] max-h-[70vh] sm:max-h-none overflow-y-auto rounded-t-[24px] sm:rounded-[32px] border border-violet-200/80 bg-white/95 shadow-[0_32px_80px_rgba(99,102,241,0.18)] backdrop-blur-xl p-4 sm:p-5"
+    >
+      <div class="flex items-start justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <span class="grid h-10 w-10 sm:h-12 sm:w-12 place-items-center rounded-3xl bg-gradient-to-br from-violet-600 via-fuchsia-500 to-pink-500 text-white shadow-xl shrink-0">
+            <app-icon [name]="ICON_MAP[node.category]" [size]="18" stroke="#fff"></app-icon>
+          </span>
+          <div class="min-w-0">
+            <p class="text-[10px] font-semibold uppercase tracking-[0.3em] text-violet-500">Clicked node</p>
+            <h2 class="mt-2 text-base sm:text-lg font-bold text-slate-900 leading-tight truncate">{{ node.label }}</h2>
+          </div>
+        </div>
+        <button (click)="graphService.clearSelection()"
+                class="inline-flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-500 hover:bg-slate-50 transition"
+                aria-label="Close info"
+        >
+          <app-icon name="close" [size]="14" stroke="#475569"></app-icon>
+        </button>
+      </div>
+      <p class="mt-4 text-sm leading-6 text-slate-600">{{ node.description }}</p>
+      <div class="mt-4 rounded-3xl bg-slate-50 p-3">
+        <div class="flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">
+          <span>System</span>
+          <span class="rounded-full bg-white px-2 py-1 text-[10px] text-slate-600">{{ node.system || 'Unknown' }}</span>
+        </div>
+      </div>
+      <div class="mt-4">
+        <div class="text-[11px] font-bold uppercase tracking-[0.24em] text-slate-400 mb-2">Connected signals</div>
+        <div class="flex flex-wrap gap-2">
+          <span *ngFor="let edge of graphService.connectedEdges(); trackBy: trackEdge"
+                class="rounded-full bg-violet-50 px-3 py-1 text-[11px] font-medium text-violet-700"
+          >{{ edge.source === node.id ? edge.target : edge.source }}</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>

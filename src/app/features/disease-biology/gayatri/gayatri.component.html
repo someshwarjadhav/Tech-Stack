@@ -1,0 +1,166 @@
+<div class="max-w-7xl mx-auto p-2.5 sm:p-4 md:p-6">
+  <app-graph-toolbar></app-graph-toolbar>
+
+  <div class="rounded-xl sm:rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+    <div class="relative">
+      <div class="absolute bottom-3 right-3 sm:bottom-5 sm:right-5 z-20 flex flex-col bg-white rounded-xl shadow-popover overflow-hidden ring-1 ring-black/10">
+        <button (click)="zoomIn()" class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-ink-900/80 hover:bg-ink-50 hover:text-ink-900 transition-colors border-b border-ink-100">
+          <app-icon name="plus" [size]="15" stroke="#000000"></app-icon>
+        </button>
+        <button (click)="zoomOut()" class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-ink-900/80 hover:bg-ink-50 hover:text-ink-900 transition-colors border-b border-ink-100">
+          <app-icon name="minus" [size]="15" stroke="#000000"></app-icon>
+        </button>
+        <button (click)="resetView()" class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-ink-900/80 hover:bg-ink-50 hover:text-ink-900 transition-colors">
+          <app-icon name="refresh" [size]="15" stroke="#000000"></app-icon>
+        </button>
+      </div>
+      <div class="w-full overflow-hidden">
+        <svg
+          #svgEl
+          [attr.viewBox]="'0 0 ' + W + ' ' + H"
+          class="w-full h-full cursor-grab active:cursor-grabbing"
+          preserveAspectRatio="xMidYMid meet"
+          (pointerdown)="onPointerDown($event)"
+          (pointermove)="onPointerMove($event)"
+          (pointerup)="onPointerUp()"
+          (pointerleave)="onPointerUp()"
+        >
+          <defs>
+            <radialGradient id="bgGrad" cx="50%" cy="45%" r="75%">
+              <stop offset="0%" stop-color="#ffffff" />
+              <stop offset="100%" stop-color="#f4f5f7" />
+            </radialGradient>
+            <radialGradient *ngFor="let group of groups" [attr.id]="'grad-' + group.key" cx="35%" cy="30%" r="70%">
+              <stop offset="0%" [attr.stop-color]="group.color" stop-opacity="1" />
+              <stop offset="100%" [attr.stop-color]="group.color" stop-opacity="0.75" />
+            </radialGradient>
+            <filter id="centerShadow" x="-50%" y="-50%" width="200%" height="200%">
+              <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#111827" flood-opacity="0.25"/>
+            </filter>
+          </defs>
+
+          <g [style.transform]="transformStyle" style="transform-origin: center;">
+            <rect x="0" y="0" [attr.width]="W" [attr.height]="H" fill="url(#bgGrad)" />
+
+            <ng-container *ngFor="let group of groups">
+              <path
+                [attr.d]="getCurvePath(CX, CY, group.x, group.y)"
+                fill="none"
+                [attr.stroke]="group.color"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                [attr.stroke-opacity]="isGroupHighlighted(group.key) ? 0.55 : 0.18"
+                [attr.stroke-dasharray]="isGroupHighlighted(group.key) ? 'none' : '4,6'"
+              />
+            </ng-container>
+
+            <ng-container *ngFor="let group of groups">
+              <path
+                *ngFor="let node of group.nodes"
+                [attr.d]="getCurvePath(group.x, group.y, node.x, node.y)"
+                fill="none"
+                [attr.stroke]="group.color"
+                stroke-width="1.4"
+                stroke-linecap="round"
+                [attr.stroke-opacity]="getLineOpacity(node, group)"
+              />
+            </ng-container>
+
+            <g filter="url(#centerShadow)">
+              <circle [attr.cx]="CX" [attr.cy]="CY" r="48" fill="#111827" />
+              <circle [attr.cx]="CX" [attr.cy]="CY" r="48" fill="none" stroke="#ffffff" stroke-width="2" stroke-opacity="0.15" />
+              <text [attr.x]="CX" [attr.y]="CY - 4" text-anchor="middle" fill="white" font-size="16" font-weight="700" letter-spacing="0.3">Obesity</text>
+              <text [attr.x]="CX" [attr.y]="CY + 15" text-anchor="middle" fill="#9ca3af" font-size="9.5" letter-spacing="0.5">DISEASE BIOLOGY</text>
+            </g>
+
+            <ng-container *ngFor="let group of groups">
+              <g [attr.opacity]="getGroupOpacity(group)">
+                <circle
+                  [attr.cx]="group.x" [attr.cy]="group.y"
+                  r="30"
+                  [attr.fill]="'url(#grad-' + group.key + ')'"
+                  fill-opacity="0.16"
+                  [attr.stroke]="group.color"
+                  stroke-width="1.4"
+                />
+                <text
+                  [attr.x]="group.x"
+                  [attr.y]="group.y"
+                  text-anchor="middle" dominant-baseline="middle"
+                  [attr.fill]="group.color"
+                  font-size="8"
+                  font-weight="700"
+                  letter-spacing="0.6"
+                >{{ group.label.toUpperCase() }}</text>
+
+                <g *ngFor="let node of group.nodes">
+                  <circle
+                    *ngIf="isNodeHighlighted(node.id)"
+                    [attr.cx]="node.x" [attr.cy]="node.y"
+                    [attr.r]="(node.r || 0) + 7"
+                    [attr.fill]="group.color"
+                    fill-opacity="0.12"
+                  />
+                  <circle
+                    class="node-circle"
+                    [class.active]="selectedNode?.id === node.id"
+                    [attr.cx]="node.x" [attr.cy]="node.y"
+                    [attr.r]="node.r"
+                    [attr.fill]="selectedNode?.id === node.id ? '#111827' : ('url(#grad-' + group.key + ')')"
+                    stroke="white"
+                    [attr.stroke-width]="selectedNode?.id === node.id ? 3 : 2"
+                    (click)="selectNode(node, group)"
+                    (mouseenter)="onNodeEnter(node, group, $event)"
+                    (mouseleave)="onNodeLeave()"
+                    (mousemove)="onNodeMove($event)"
+                  />
+                  <text
+                    [attr.x]="node.x"
+                    [attr.y]="(node.y || 0) + (node.r || 0) + 15"
+                    text-anchor="middle"
+                    font-size="9.5"
+                    font-weight="600"
+                    [attr.fill]="selectedNode?.id === node.id ? '#111827' : '#374151'"
+                  >{{ node.label }}</text>
+                </g>
+              </g>
+            </ng-container>
+          </g>
+        </svg>
+      </div>
+
+      <div class="tooltip-box" [class.visible]="tooltipVisible"
+           [style.left.px]="tooltipX" [style.top.px]="tooltipY">
+        <div class="t-label" [style.color]="tooltipGroup?.color || '#fff'">
+          {{ tooltipNode?.label }}
+        </div>
+        <div class="t-desc">{{ (tooltipNode?.desc || '').substring(0, 70) }}{{ (tooltipNode?.desc || '').length > 70 ? '...' : '' }}</div>
+        <div class="t-group">{{ tooltipGroup?.label }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="selectedNode"
+       class="mt-4 bg-white rounded-2xl border-2 p-5 detail-panel shadow-sm"
+       [style.borderColor]="selectedGroup?.color">
+    <div class="flex items-start justify-between mb-2">
+      <div>
+        <span class="text-[10px] font-bold uppercase tracking-wider" [style.color]="selectedGroup?.color">
+          {{ selectedGroup?.label }}
+        </span>
+        <h3 class="text-lg font-bold text-gray-900 mt-1">{{ selectedNode.label }}</h3>
+      </div>
+      <button (click)="closeDetails()" class="text-gray-400 hover:text-gray-600 text-lg">✕</button>
+    </div>
+    <p class="text-sm text-gray-700 leading-relaxed">{{ selectedNode.desc }}</p>
+    <div *ngIf="selectedNode.refs && selectedNode.refs.length > 0" class="mt-3 pt-3 border-t border-gray-100">
+      <p class="text-xs text-gray-500 font-medium">References</p>
+      <div class="mt-1 flex flex-wrap gap-1.5">
+        <span *ngFor="let ref of selectedNode.refs"
+              class="text-[10px] text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
+          {{ ref }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

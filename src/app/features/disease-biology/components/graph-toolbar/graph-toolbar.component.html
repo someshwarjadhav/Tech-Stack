@@ -1,0 +1,52 @@
+<div
+  class="flex items-center justify-between flex-wrap gap-2 sm:gap-3 px-3 sm:px-4 md:px-6 pt-3 sm:pt-4 md:pt-5 pb-3 sm:pb-4"
+>
+
+  <div class="inline-flex bg-ink-100/70 rounded-xl p-1 w-full xs:w-auto sm:w-auto overflow-x-auto">
+    <button
+      (click)="graphService.setActiveTab('pathways')"
+      class="flex items-center justify-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[12px] sm:text-[13px] font-semibold transition-all whitespace-nowrap flex-1 sm:flex-initial"
+      [class.bg-ink-900]="graphService.activeTab() === 'pathways'"
+      [class.text-white]="graphService.activeTab() === 'pathways'"
+      [class.shadow-panel]="graphService.activeTab() === 'pathways'"
+      [class.text-ink-500]="graphService.activeTab() !== 'pathways'"
+    >
+      <app-icon name="disease-biology" [size]="15"></app-icon>
+      Pathways
+    </button>
+    <button
+      (click)="graphService.setActiveTab('mechanisms')"
+      class="flex items-center justify-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-[12px] sm:text-[13px] font-semibold transition-all whitespace-nowrap flex-1 sm:flex-initial"
+      [class.bg-ink-900]="graphService.activeTab() === 'mechanisms'"
+      [class.text-white]="graphService.activeTab() === 'mechanisms'"
+      [class.shadow-panel]="graphService.activeTab() === 'mechanisms'"
+      [class.text-ink-500]="graphService.activeTab() !== 'mechanisms'"
+    >
+      <app-icon name="target" [size]="15"></app-icon>
+      <span class="hidden xs:inline sm:inline">Mechanisms &amp; Therapies</span>
+      <span class="xs:hidden sm:hidden">Mechanisms</span>
+    </button>
+  </div>
+
+
+  <div class="flex items-center gap-2 w-full xs:w-auto sm:w-auto">
+    <span class="text-[12px] font-medium text-ink-400 shrink-0">Explore</span>
+    <div class="relative flex-1 xs:flex-initial sm:flex-initial">
+      <select
+        class="w-full xs:w-auto sm:w-auto appearance-none pl-3.5 pr-9 py-2 text-[13px] font-semibold text-ink-700 bg-white border border-ink-100 rounded-lg cursor-pointer hover:border-ink-200 focus:border-brand-300 focus:ring-2 focus:ring-brand-100 outline-none transition"
+        [value]="graphService.exploreMode()"
+        (change)="onModeChange($event)"
+      >
+        <option value="freely">Explore freely</option>
+        <option value="signal-flow">Signal flow</option>
+        <option value="therapeutic-targets">Therapeutic targets</option>
+      </select>
+      <app-icon
+        name="chevron-down"
+        [size]="14"
+        stroke="#818aa0"
+        class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+      ></app-icon>
+    </div>
+  </div>
+</div>

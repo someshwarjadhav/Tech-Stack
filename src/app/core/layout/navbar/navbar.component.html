@@ -1,0 +1,49 @@
+<header class="h-auto min-h-[60px] sm:h-[68px] shrink-0 border-b border-ink-100 bg-white/80 backdrop-blur px-3 sm:px-4 md:px-6 py-2.5 sm:py-0 flex items-center gap-2 sm:gap-4">
+
+ 
+  <button
+    (click)="layout.toggleSidebar()"
+    class="lg:hidden w-9 h-9 shrink-0 flex items-center justify-center rounded-lg text-ink-600 hover:bg-ink-50 transition-colors border border-ink-100"
+    aria-label="Open menu"
+  >
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+  </button>
+
+  <div class="min-w-0 flex-1 sm:flex-initial">
+    <div class="flex items-center gap-1.5 text-[12px] sm:text-[13px] text-ink-400 font-medium">
+      <span class="hover:text-ink-600 cursor-pointer transition-colors">Obesity</span>
+      <app-icon name="chevron-right" [size]="13" stroke="#c7cbd6"></app-icon>
+      <span class="text-ink-900 font-semibold truncate">Disease Biology</span>
+    </div>
+    <p class="hidden sm:block text-[12px] text-ink-400 mt-0.5 truncate max-w-[220px] md:max-w-none">Pathways, signals, and mechanisms driving obesity — from genes to whole-body regulation</p>
+  </div>
+
+  <div class="hidden md:flex items-center flex-1 max-w-sm">
+    <div class="relative w-full">
+      <app-icon name="search" [size]="16" stroke="#aeb5c4" class="absolute left-3 top-1/2 -translate-y-1/2"></app-icon>
+      <input
+        type="text"
+        placeholder="Search nodes, pathways, targets..."
+        class="w-full pl-9 pr-3 py-2 text-[13px] rounded-lg border border-ink-100 bg-ink-50/60 focus:bg-white focus:border-brand-300 focus:ring-2 focus:ring-brand-100 outline-none transition"
+      />
+    </div>
+  </div>
+
+
+  <div class="flex items-center gap-1.5 sm:gap-2 shrink-0 ml-auto">
+    <button class="hidden sm:flex items-center gap-1.5 px-2.5 md:px-3 py-2 text-[12.5px] font-semibold text-ink-600 hover:bg-ink-50 rounded-lg transition-colors border border-ink-100">
+      <app-icon name="book" [size]="15"></app-icon>
+      <span class="hidden md:inline">References</span>
+    </button>
+    <button class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-ink-50 text-ink-500 transition-colors relative">
+      <app-icon name="search" [size]="17" class="md:hidden"></app-icon>
+      <app-icon name="bell" [size]="17" class="hidden md:block"></app-icon>
+      <span class="absolute top-1.5 right-2 w-1.5 h-1.5 rounded-full bg-node-pink"></span>
+    </button>
+    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-white text-[11px] sm:text-[12px] font-bold shadow-panel shrink-0">
+      MG
+    </div>
+  </div>
+</header>

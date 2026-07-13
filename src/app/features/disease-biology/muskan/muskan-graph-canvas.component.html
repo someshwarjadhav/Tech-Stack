@@ -1,0 +1,188 @@
+<div class="relative w-full h-full bg-[radial-gradient(circle_at_20%_10%,#f6f4ff_0%,transparent_45%),radial-gradient(circle_at_85%_85%,#eefaf6_0%,transparent_40%)] overflow-hidden">
+
+ 
+  <div class="absolute bottom-3 right-3 sm:bottom-5 sm:right-5 z-20 flex flex-col bg-white rounded-xl shadow-popover border border-ink-100 overflow-hidden">
+    <button (click)="zoomIn()" class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-ink-500 hover:bg-ink-50 hover:text-brand-600 transition-colors border-b border-ink-100">
+      <app-icon name="plus" [size]="15"></app-icon>
+    </button>
+    <button (click)="zoomOut()" class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-ink-500 hover:bg-ink-50 hover:text-brand-600 transition-colors border-b border-ink-100">
+      <app-icon name="minus" [size]="15"></app-icon>
+    </button>
+    <button (click)="resetView()" class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-ink-500 hover:bg-ink-50 hover:text-brand-600 transition-colors">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8" />
+        <path d="M3 3v5h5" />
+      </svg>
+    </button>
+  </div>
+
+ 
+  <div class="absolute bottom-3 left-3 sm:bottom-5 sm:left-5 z-20 bg-white/90 backdrop-blur rounded-xl shadow-panel border border-ink-100 px-2.5 sm:px-3.5 py-2 sm:py-3 max-w-[62%] xs:max-w-[55%] sm:max-w-none">
+    <div class="grid grid-cols-1 xs:grid-cols-2 gap-x-3 sm:gap-x-4 gap-y-1 sm:gap-y-1.5">
+      @for (cluster of clusters; track cluster.id) {
+        <div class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full shrink-0" [style.background]="colors[cluster.category].ring"></span>
+          <span class="text-[9.5px] sm:text-[10.5px] font-medium text-ink-500 whitespace-nowrap truncate">{{ cluster.label }}</span>
+        </div>
+      }
+    </div>
+  </div>
+
+ 
+  @if (tooltip(); as tip) {
+    <div
+      class="absolute z-30 max-w-[220px] bg-ink-900 text-white text-[12px] leading-snug rounded-lg px-3 py-2 shadow-popover pointer-events-none animate-fade-in"
+      [style.left.px]="tip.x + 12"
+      [style.top.px]="tip.y - 10"
+    >
+      {{ tip.edge.label }}
+    </div>
+  }
+
+ 
+  @if (graphService.selectedNode(); as node) {
+    <aside class="absolute right-6 top-6 z-30 w-[320px] rounded-[28px] border border-violet-200/70 bg-white/95 shadow-[0_28px_70px_rgba(139,92,246,0.18)] backdrop-blur-xl ring-1 ring-violet-100 p-5">
+      <div class="flex items-start justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <span class="grid h-12 w-12 place-items-center rounded-3xl bg-gradient-to-br from-violet-600 via-fuchsia-500 to-pink-500 text-white shadow-xl">
+            <app-icon [name]="icons[node.category]" [size]="18" stroke="#fff"></app-icon>
+          </span>
+          <div>
+            <p class="text-[10px] font-semibold uppercase tracking-[0.28em] text-violet-500">Node insight</p>
+            <h2 class="mt-2 text-lg font-bold text-slate-900 leading-tight">{{ node.label }}</h2>
+          </div>
+        </div>
+        <button
+          (click)="graphService.clearSelection()"
+          class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-slate-500 hover:bg-slate-50 transition"
+          aria-label="Close info card"
+        >
+          <app-icon name="close" [size]="14" stroke="#475569"></app-icon>
+        </button>
+      </div>
+      <p class="mt-4 text-sm leading-6 text-slate-600">{{ node.description }}</p>
+      <div class="mt-4 rounded-3xl bg-slate-50 p-3">
+        <div class="flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">
+          <span>System</span>
+          <span class="rounded-full bg-white px-2 py-1 text-[10px] text-slate-600">{{ graphService.connectedEdges().length }} connections</span>
+        </div>
+        <div class="mt-2 text-sm font-medium text-slate-800">{{ node.system }}</div>
+      </div>
+      <div class="mt-4">
+        <div class="text-[11px] font-bold uppercase tracking-[0.24em] text-slate-400 mb-2">Connected signals</div>
+        <div class="flex flex-wrap gap-2">
+          @for (edge of graphService.connectedEdges(); track edge.id) {
+            <span class="rounded-full bg-violet-50 px-3 py-1 text-[11px] font-medium text-violet-700">{{ edge.source === node.id ? edge.target : edge.source }}</span>
+          }
+        </div>
+      </div>
+    </aside>
+  }
+
+  <svg
+    #svgEl
+    class="w-full h-full cursor-grab active:cursor-grabbing"
+    [attr.viewBox]="'0 0 ' + viewW + ' ' + viewH"
+    preserveAspectRatio="xMidYMid meet"
+    (pointerdown)="onPointerDown($event)"
+    (pointermove)="onPointerMove($event)"
+    (pointerup)="onPointerUp()"
+    (pointerleave)="onPointerUp()"
+  >
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0L10 5L0 10z" fill="#c7cbd6" />
+      </marker>
+      <marker id="arrow-active" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0L10 5L0 10z" fill="#5b23e0" />
+      </marker>
+    </defs>
+
+    <g [style.transform]="transformStyle" style="transform-origin: center;">
+
+    
+      @for (halo of clusterHalos(); track halo.id) {
+        <g>
+          <circle
+            [attr.cx]="halo.cx" [attr.cy]="halo.cy" [attr.r]="halo.r"
+            [attr.fill]="colors[halo.category].fill" fill-opacity="0.05"
+            [attr.stroke]="colors[halo.category].ring" stroke-opacity="0.18" stroke-width="1.5" stroke-dasharray="4 4"
+          />
+          <text
+            [attr.x]="halo.cx" [attr.y]="halo.cy - halo.r + 14"
+            text-anchor="middle"
+            [attr.fill]="colors[halo.category].text"
+            fill-opacity="0.55"
+            style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;"
+          >{{ halo.label }}</text>
+        </g>
+      }
+
+   
+      @for (edge of edges; track edge.id) {
+        <path
+          [attr.d]="edgePath(edge)"
+          fill="none"
+          [attr.stroke]="isEdgeActive(edge) ? '#5b23e0' : (edge.kind === 'dotted' ? '#d5d9e2' : '#dfe2e9')"
+          [attr.stroke-width]="isEdgeActive(edge) ? 2.2 : (edge.kind === 'primary' ? 1.6 : 1.2)"
+          [attr.stroke-dasharray]="edge.kind === 'dotted' ? '3 4' : (isEdgeActive(edge) ? '6 5' : 'none')"
+          [class.animate-dash]="isEdgeActive(edge)"
+          [attr.marker-end]="isEdgeActive(edge) ? 'url(#arrow-active)' : (edge.kind !== 'dotted' ? 'url(#arrow)' : null)"
+          [attr.opacity]="isEdgeActive(edge) ? 1 : 0.55"
+          class="transition-all duration-200 cursor-pointer"
+          (mouseenter)="onEdgeHover(edge, $event)"
+          (mousemove)="onEdgeHover(edge, $event)"
+          (mouseleave)="onEdgeHover(null)"
+        />
+      }
+
+    
+      @for (node of nodes; track node.id) {
+        @let pos = toPx(node.x, node.y);
+        <g
+          [style.opacity]="isDimmed(node.id) ? 0.28 : 1"
+          class="transition-opacity duration-200 cursor-pointer"
+          (click)="onNodeClick(node)"
+          (mouseenter)="onNodeHover(node.id)"
+          (mouseleave)="onNodeHover(null)"
+        >
+          @if (graphService.selectedNodeId() === node.id) {
+            <polygon
+              [attr.points]="hexPoints(pos.px, pos.py, node.radius + 8)"
+              fill="none"
+              [attr.stroke]="colors[node.category].ring"
+              stroke-width="2"
+              stroke-opacity="0.4"
+              class="animate-pulse-slow"
+            />
+          }
+          <polygon
+            [attr.points]="hexPoints(pos.px, pos.py, node.radius)"
+            [attr.fill]="colors[node.category].fill"
+            [attr.stroke]="graphService.selectedNodeId() === node.id ? colors[node.category].text : colors[node.category].ring"
+            [attr.stroke-width]="graphService.selectedNodeId() === node.id ? 2.5 : 2"
+            stroke-linejoin="round"
+            class="transition-transform duration-150"
+            style="filter: drop-shadow(0 2px 4px rgba(16,24,40,0.12));"
+          />
+          <g
+            [attr.transform]="'translate(' + (pos.px - node.radius * 0.5) + ',' + (pos.py - node.radius * 0.5) + ') scale(' + (node.radius / 24) + ')'"
+            fill="none"
+            stroke="white"
+            stroke-width="1.9"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            style="pointer-events: none;"
+            [innerHTML]="nodeIconPath(node.category)"
+          ></g>
+          <text
+            [attr.x]="pos.px" [attr.y]="pos.py + node.radius + 16"
+            text-anchor="middle"
+            fill="#3e4356"
+            style="font-size: 10.5px; font-weight: 600; pointer-events: none;"
+          >{{ node.label }}</text>
+        </g>
+      }
+    </g>
+  </svg>
+</div>
